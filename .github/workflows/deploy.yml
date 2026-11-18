@@ -22,58 +22,22 @@ jobs:
           username: root
           password: ${{ secrets.SERVER_PASSWORD || '1T4dTddMh0tbzFwBCIlu' }}
           port: 22
+          timeout: 120s
+          command_timeout: 15m
           script: |
             set -e
             APP_DIR="/root/doanh_tri_project"
             REPO_URL="https://github.com/viconnect-product-team/doanh_tri_project.git"
 
-            echo "==> Deploying Doanh Tri Project to $APP_DIR..."
             if [ ! -d "$APP_DIR" ]; then
               echo "==> Cloning repository..."
               git clone "$REPO_URL" "$APP_DIR"
-              cd "$APP_DIR"
-            else
-              echo "==> Fetching and resetting to latest code..."
-              cd "$APP_DIR"
-              git fetch origin
-              BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
-              git reset --hard "origin/$BRANCH"
             fi
 
-            # Setup .env if missing
-            if [ ! -f .env ]; then
-              echo "==> Setting up .env from .env.example..."
-              cp .env.example .env
-            fi
+            cd "$APP_DIR"
+            echo "==> Fetching latest changes..."
+            git fetch origin main
+            git reset --hard origin/main
 
-            echo "==> Building and deploying with Docker Compose..."
-            docker compose down || true
-            docker compose up -d --build
-
-            echo "==> Checking Nginx configuration for iem.demo.ubos.vn..."
-            NGINX_CONF="/etc/nginx/sites-available/iem.demo.ubos.vn"
-            if [ ! -f "$NGINX_CONF" ]; then
-              echo "==> Creating Nginx reverse proxy configuration..."
-              cat << 'EOF' > "$NGINX_CONF"
-            server {
-                listen 80;
-                listen [::]:80;
-                server_name iem.demo.ubos.vn;
-
-                location / {
-                    proxy_pass http://127.0.0.1:5024;
-                    proxy_http_version 1.1;
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection "upgrade";
-                }
-            }
-            EOF
-              ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/iem.demo.ubos.vn
-            fi
-
-            nginx -t && systemctl reload nginx
-            echo "==> Deployment completed successfully! Service is live on port 5024."
+            chmod +x deploy.sh
+            ./deploy.sh
