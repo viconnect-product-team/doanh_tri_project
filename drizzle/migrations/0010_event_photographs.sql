@@ -1,0 +1,2 @@
+ALTER TABLE public.events ADD COLUMN image_url text NOT NULL DEFAULT '', ADD COLUMN image_caption text NOT NULL DEFAULT '', ADD COLUMN image_caption_en text;
+COMMENT ON COLUMN public.events.image_url IS 'Documentary event photograph hosted through Lovable Assets; attribution retained in source fields.';

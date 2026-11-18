@@ -1,0 +1,15 @@
+CREATE TABLE public.member_profiles (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL UNIQUE, full_name text NOT NULL, organization text NOT NULL DEFAULT '', phone text NOT NULL DEFAULT '', tier_id text NOT NULL REFERENCES public.membership_plans(id), starts_on date, ends_on date, active boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT, UPDATE ON public.member_profiles TO authenticated;
+GRANT ALL ON public.member_profiles TO service_role;
+ALTER TABLE public.member_profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Member reads own profile" ON public.member_profiles FOR SELECT TO authenticated USING (user_id = auth.uid());
+CREATE POLICY "Admin manages member profiles" ON public.member_profiles FOR ALL TO authenticated USING (public.has_role(auth.uid(),'admin')) WITH CHECK (public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.member_records (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), member_id uuid NOT NULL REFERENCES public.member_profiles(id), kind text NOT NULL CHECK (kind IN ('registration','benefit','consultation')), title text NOT NULL, event_date date, status text NOT NULL DEFAULT '', benefit_key text CHECK (benefit_key IS NULL OR benefit_key IN ('knowledge','dinners','press','visits','flowers','mentoring','speaking','overseas','ceo')), quantity integer NOT NULL DEFAULT 1 CHECK (quantity > 0), created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.member_records TO authenticated;
+GRANT ALL ON public.member_records TO service_role;
+ALTER TABLE public.member_records ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Member reads own records" ON public.member_records FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM public.member_profiles m WHERE m.id = member_id AND m.user_id = auth.uid()));
+CREATE POLICY "Admin manages member records" ON public.member_records FOR ALL TO authenticated USING (public.has_role(auth.uid(),'admin')) WITH CHECK (public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.assistant_public_state (id boolean PRIMARY KEY DEFAULT true CHECK (id), blocked_reason text);
+GRANT ALL ON public.assistant_public_state TO service_role;
+ALTER TABLE public.assistant_public_state ENABLE ROW LEVEL SECURITY;

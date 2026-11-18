@@ -1,0 +1,22 @@
+CREATE TABLE public.member_payment_settings (id boolean PRIMARY KEY DEFAULT true CHECK(id), bank_name text NOT NULL DEFAULT '', account_number text NOT NULL DEFAULT '', account_holder text NOT NULL DEFAULT '', fees_confirmed boolean NOT NULL DEFAULT false, enabled boolean NOT NULL DEFAULT false, updated_at timestamptz NOT NULL DEFAULT now(), CHECK(NOT enabled OR (fees_confirmed AND length(trim(bank_name))>0 AND length(trim(account_number))>0 AND length(trim(account_holder))>0)));
+GRANT SELECT,INSERT,UPDATE ON public.member_payment_settings TO authenticated; GRANT ALL ON public.member_payment_settings TO service_role;
+ALTER TABLE public.member_payment_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Members read enabled bank" ON public.member_payment_settings FOR SELECT TO authenticated USING(enabled);
+CREATE POLICY "Admin manages member bank" ON public.member_payment_settings FOR ALL TO authenticated USING(public.has_role(auth.uid(),'admin')) WITH CHECK(public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.member_payment_orders (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), reference text NOT NULL UNIQUE, member_id uuid NOT NULL REFERENCES public.member_profiles(id), tier_id text NOT NULL REFERENCES public.membership_plans(id), package_title text NOT NULL, amount integer NOT NULL CHECK(amount>0), full_name text NOT NULL, organization text NOT NULL DEFAULT '', phone text NOT NULL DEFAULT '', bank_name text NOT NULL, account_number text NOT NULL, account_holder text NOT NULL, status text NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','paid','cancelled')), confirmed_at timestamptz, confirmed_by uuid, starts_on date, ends_on date, created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,UPDATE ON public.member_payment_orders TO authenticated; GRANT ALL ON public.member_payment_orders TO service_role;
+ALTER TABLE public.member_payment_orders ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Member reads own payments" ON public.member_payment_orders FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.member_profiles m WHERE m.id=member_id AND m.user_id=auth.uid()));
+CREATE POLICY "Admin reads payments" ON public.member_payment_orders FOR SELECT TO authenticated USING(public.has_role(auth.uid(),'admin'));
+CREATE POLICY "Admin confirms payments" ON public.member_payment_orders FOR UPDATE TO authenticated USING(public.has_role(auth.uid(),'admin')) WITH CHECK(public.has_role(auth.uid(),'admin'));
+CREATE UNIQUE INDEX member_one_pending_payment ON public.member_payment_orders(member_id) WHERE status='pending';
+CREATE FUNCTION public.confirm_member_bank_payment() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE start_date date; BEGIN
+IF NOT public.has_role(auth.uid(),'admin') THEN RAISE EXCEPTION 'Forbidden'; END IF;
+IF (to_jsonb(NEW)-ARRAY['status','confirmed_at','confirmed_by','starts_on','ends_on']) IS DISTINCT FROM (to_jsonb(OLD)-ARRAY['status','confirmed_at','confirmed_by','starts_on','ends_on']) THEN RAISE EXCEPTION 'Order details immutable'; END IF;
+IF OLD.status<>'pending' THEN RAISE EXCEPTION 'Order already processed'; END IF;
+IF NEW.status='paid' THEN
+SELECT CASE WHEN m.tier_id=NEW.tier_id AND m.ends_on >= (now() AT TIME ZONE 'Asia/Ho_Chi_Minh')::date THEN m.ends_on+1 ELSE (now() AT TIME ZONE 'Asia/Ho_Chi_Minh')::date END INTO start_date FROM public.member_profiles m WHERE m.id=NEW.member_id FOR UPDATE;
+NEW.confirmed_at=now(); NEW.confirmed_by=auth.uid(); NEW.starts_on=start_date; NEW.ends_on=(start_date+interval '12 months')::date-1;
+UPDATE public.member_profiles SET full_name=NEW.full_name,organization=NEW.organization,phone=NEW.phone,tier_id=NEW.tier_id,active=true,approval_status='approved',approved_at=coalesce(approved_at,now()),starts_on=CASE WHEN tier_id=NEW.tier_id AND ends_on >= (now() AT TIME ZONE 'Asia/Ho_Chi_Minh')::date THEN starts_on ELSE NEW.starts_on END,ends_on=NEW.ends_on WHERE id=NEW.member_id;
+ELSE NEW.confirmed_at=NULL; NEW.confirmed_by=NULL; NEW.starts_on=NULL; NEW.ends_on=NULL; END IF; RETURN NEW; END $$;
+CREATE TRIGGER confirm_member_bank_payment BEFORE UPDATE ON public.member_payment_orders FOR EACH ROW EXECUTE FUNCTION public.confirm_member_bank_payment();

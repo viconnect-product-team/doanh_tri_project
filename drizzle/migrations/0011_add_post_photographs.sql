@@ -1,0 +1,1 @@
+ALTER TABLE public.posts ADD COLUMN image_url text NOT NULL DEFAULT '', ADD COLUMN image_caption text NOT NULL DEFAULT '', ADD COLUMN image_caption_en text;

@@ -1,0 +1,4 @@
+CREATE POLICY "Staff read cms media" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'cms-media' AND (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'staff')));
+CREATE POLICY "Staff upload cms media" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'cms-media' AND (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'staff')));
+CREATE POLICY "Staff update cms media" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'cms-media' AND (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'staff')));
+CREATE POLICY "Staff delete cms media" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'cms-media' AND (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'staff')));

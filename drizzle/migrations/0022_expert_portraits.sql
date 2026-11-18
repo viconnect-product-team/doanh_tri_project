@@ -1,0 +1,1 @@
+ALTER TABLE public.experts ADD COLUMN IF NOT EXISTS image_url text NOT NULL DEFAULT '', ADD COLUMN IF NOT EXISTS image_thumb_url text NOT NULL DEFAULT '';

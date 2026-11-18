@@ -1,0 +1,4 @@
+ALTER TABLE public.member_profiles ADD COLUMN approval_status text NOT NULL DEFAULT 'pending', ADD COLUMN approved_at timestamptz, ADD COLUMN invitation_sent_at timestamptz;
+UPDATE public.member_profiles SET approval_status = 'approved', approved_at = created_at;
+ALTER TABLE public.member_profiles ADD CONSTRAINT member_profiles_approval_status_check CHECK (approval_status IN ('pending', 'approved')), ADD CONSTRAINT member_profiles_approval_timestamp_check CHECK (approval_status <> 'approved' OR approved_at IS NOT NULL);
+COMMENT ON COLUMN public.member_profiles.invitation_sent_at IS 'Auth invitation accepted for sending; not proof of inbox delivery.';

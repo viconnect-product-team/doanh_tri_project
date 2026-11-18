@@ -1,0 +1,1 @@
+CREATE POLICY "Members read assigned membership plan" ON public.membership_plans FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM public.member_profiles m WHERE m.tier_id = membership_plans.id AND m.user_id = auth.uid()));
