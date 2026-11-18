@@ -9,7 +9,12 @@ if [ ! -f .env ]; then
   cp .env.example .env
 fi
 
-# 2. Build and restart Docker container
+# 2. Configure firewall & Build and restart Docker container
+echo "==> [Deploy] Configuring firewall for port 5024..."
+iptables -C INPUT -p tcp --dport 5024 -j ACCEPT 2>/dev/null || iptables -I INPUT -p tcp --dport 5024 -j ACCEPT
+iptables -C FORWARD -p tcp --dport 5024 -j ACCEPT 2>/dev/null || iptables -I FORWARD -p tcp --dport 5024 -j ACCEPT
+iptables -C DOCKER-USER -p tcp --dport 5024 -j ACCEPT 2>/dev/null || iptables -I DOCKER-USER -p tcp --dport 5024 -j ACCEPT
+
 echo "==> [Deploy] Building and running Docker container..."
 docker compose down || true
 docker compose up -d --build
