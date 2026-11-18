@@ -1,18 +1,18 @@
-FROM node:22-alpine AS builder
+FROM oven/bun:1-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies
-COPY package*.json ./
-RUN npm install
+# Install dependencies using bun.lock
+COPY package.json bun.lock* ./
+RUN bun install
 
 # Copy source code
 COPY . .
 
 # Build TanStack Start SSR application
-RUN npm run build
+RUN bun run build
 
-# Runner stage
+# Runner stage using Node 22
 FROM node:22-alpine AS runner
 
 WORKDIR /app
