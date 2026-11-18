@@ -24,7 +24,7 @@ if [ ! -f "$NGINX_CONF" ]; then
 server {
     listen 80;
     listen [::]:80;
-    server_name iem.demo.ubos.vn;
+    server_name iem.demo.ubos.vn iem.14-225-217-232.nip.io;
 
     location / {
         proxy_pass http://127.0.0.1:5024;
