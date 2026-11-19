@@ -55,18 +55,6 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background shadow-soft">
-      {/* Top contact info bar */}
-      <div className="border-b border-border/70 bg-muted/60 text-xs text-muted-foreground hidden md:block">
-        <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-between px-4 md:px-8">
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary shrink-0" /><span>{t.contact.address}</span></span>
-            <a href={`mailto:${INSTITUTE_CONTACT.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-3.5 w-3.5 text-primary shrink-0" /><span>{INSTITUTE_CONTACT.email}</span></a>
-          </div>
-          <div className="flex items-center gap-4">
-            <a href={INSTITUTE_CONTACT.fanpageUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Facebook className="h-3.5 w-3.5 text-primary shrink-0" /><span>{t.contact.fanpageName}</span></a>
-          </div>
-        </div>
-      </div>
       <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between gap-3 px-4 md:px-8">
         <Logo onClick={() => setOpen(false)} />
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
@@ -112,11 +100,6 @@ export function Header() {
           <Link to="/tro-ly" onClick={() => setOpen(false)} className="block py-4 font-semibold text-primary">{t.assistant.title}</Link>
           <Link to={signedIn ? "/hoi-vien" : "/auth"} search={signedIn ? {} : { member: true }} onClick={() => setOpen(false)} className="block py-4 font-semibold text-primary">{signedIn ? t.memberPage.title : t.assistant.membershipLogin}</Link>
           <Link to={signedIn ? "/cms" : "/auth"} onClick={() => setOpen(false)} className="flex items-center gap-2 py-4 font-semibold text-primary"><ShieldCheck className="h-4 w-4" />{signedIn ? t.common.adminArea : t.common.adminLogin}</Link>
-          <div className="mt-4 border-t border-border pt-4 text-xs text-muted-foreground space-y-2.5">
-            <p className="flex items-start gap-2"><MapPin className="h-4 w-4 shrink-0 text-primary mt-0.5" /><span>{t.contact.address}</span></p>
-            <p className="flex items-center gap-2"><Mail className="h-4 w-4 shrink-0 text-primary" /><a href={`mailto:${INSTITUTE_CONTACT.email}`} className="hover:text-primary">{INSTITUTE_CONTACT.email}</a></p>
-            <p className="flex items-center gap-2"><Facebook className="h-4 w-4 shrink-0 text-primary" /><a href={INSTITUTE_CONTACT.fanpageUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary">{t.contact.fanpageName}</a></p>
-          </div>
         </nav>
       )}
     </header>
