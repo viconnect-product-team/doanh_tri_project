@@ -2,7 +2,7 @@ import { richTextPlain } from "@/lib/rich-text";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Compass, Gem, Mountain, Facebook, Mail, MapPin } from "lucide-react";
+import { Compass, Gem, Mountain } from "lucide-react";
 import { t } from "@/content/i18n";
 import { Eyebrow, H2, PageHero, Pillars, Section } from "@/components/site/Layout";
 import hero from "@/assets/hero-home.jpg";
@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { publicContentQuery } from "@/lib/cms.functions";
 import { L } from "@/lib/localized";
-import { INSTITUTE_CONTACT } from "@/lib/contact";
 
 export const Route = createFileRoute("/ve-vien")({
   head: () => ({
@@ -67,36 +66,6 @@ function About() {
         <Pillars />
       </Section>
       <FounderProfile />
-      <Section className="border-t border-border py-16">
-        <div className="rounded-xl border border-border bg-card p-6 shadow-soft md:p-10">
-          <Eyebrow>{t.contact.eyebrow}</Eyebrow>
-          <H2>{t.brand.name} (IEM)</H2>
-          <p className="mt-3 max-w-2xl text-muted-foreground">{t.footer.about}</p>
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            <div className="flex items-start gap-3 rounded-lg border border-border/80 bg-muted/30 p-4">
-              <MapPin className="h-5 w-5 shrink-0 text-primary mt-0.5" />
-              <div>
-                <span className="block text-xs font-semibold uppercase text-muted-foreground">{t.contact.addressLabel}</span>
-                <p className="mt-1 text-sm font-medium text-navy">{t.contact.address}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 rounded-lg border border-border/80 bg-muted/30 p-4">
-              <Mail className="h-5 w-5 shrink-0 text-primary mt-0.5" />
-              <div className="min-w-0">
-                <span className="block text-xs font-semibold uppercase text-muted-foreground">{t.contact.emailLabel}</span>
-                <a href={`mailto:${INSTITUTE_CONTACT.email}`} className="mt-1 block break-all text-sm font-medium text-primary hover:underline">{INSTITUTE_CONTACT.email}</a>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 rounded-lg border border-border/80 bg-muted/30 p-4">
-              <Facebook className="h-5 w-5 shrink-0 text-primary mt-0.5" />
-              <div>
-                <span className="block text-xs font-semibold uppercase text-muted-foreground">{t.contact.fanpageLabel}</span>
-                <a href={INSTITUTE_CONTACT.fanpageUrl} target="_blank" rel="noopener noreferrer" className="mt-1 block text-sm font-medium text-primary hover:underline">{t.contact.fanpageName}</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
       </TabsContent>
       <TabsContent value="1" className="mt-0">
       <Section className="grid items-center gap-10 lg:grid-cols-[1.1fr_1fr_1fr]">

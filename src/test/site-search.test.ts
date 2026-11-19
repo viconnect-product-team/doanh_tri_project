@@ -11,7 +11,7 @@ const content = {
 describe("global website search", () => {
   const entries = buildSearchIndex(content, "vi");
   it("finds an expert and article body mentioning their name without accents", () => {
-    expect(searchSite(entries, "nguyen thi lan anh").map(r => r.id)).toEqual(["experts-e1", "posts-p1", "/ve-vien"]);
+    expect(searchSite(entries, "nguyen thi lan anh").map(r => r.id)).toEqual(["experts-e1", "posts-p1"]);
   });
   it("finds courses and events with stable destinations", () => {
     expect(searchSite(entries, "AI cho lanh dao", "courses")[0]).toMatchObject({ to: "/dao-tao", hash: "courses-c1" });

@@ -1,5 +1,5 @@
-import { Link, useLocation } from "@tanstack/react-router";
-import { useState, useEffect, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import { useState, type ReactNode } from "react";
 import { ArrowRight, Facebook, Mail, MapPin, Menu, X, BookOpen, GraduationCap, Lightbulb, Users, ShieldCheck } from "lucide-react";
 import { t, setLocale, useLocale } from "@/content/i18n";
 import { useServerFn } from "@tanstack/react-start";
@@ -13,17 +13,7 @@ import { INSTITUTE_CONTACT } from "@/lib/contact";
 
 export function Logo({ onClick }: { onClick?: () => void }) {
   return (
-    <Link
-      to="/"
-      onClick={() => {
-        onClick?.();
-        if (typeof window !== "undefined") {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-      }}
-      className="flex shrink-0 items-center gap-3 cursor-pointer"
-      aria-label={t.brand.name}
-    >
+    <Link to="/" onClick={onClick} className="flex shrink-0 items-center gap-3" aria-label={t.brand.name}>
       <img src={logoUrl} alt={t.brand.name} className="h-11 w-auto" />
       <span className="hidden leading-tight sm:block">
         <span className="block text-xs font-bold text-navy sm:text-sm">{t.brand.name}</span>
@@ -46,13 +36,7 @@ function LangSwitch() {
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const location = useLocation();
   const { data: signedIn } = useQuery({ queryKey: ["site-session"], queryFn: async () => !!(await supabase.auth.getUser()).data.user });
-
-  useEffect(() => {
-    setOpen(false);
-  }, [location.pathname, location.search]);
-
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background shadow-soft">
       <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between gap-3 px-4 md:px-8">

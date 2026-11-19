@@ -115,7 +115,7 @@ function Cms() {
   const [switching, startSwitch] = useTransition();
   const setKind = (k: typeof kind) => startSwitch(() => setKindNow(k));
   return (
-    <div className="mx-auto w-full flex-1 max-w-6xl px-4 py-10 md:px-8">
+    <div className="mx-auto min-h-[calc(100dvh-5rem)] max-w-6xl px-4 py-10 md:px-8">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
         <h1 className="truncate font-display text-2xl font-semibold text-navy md:text-3xl">{c.title}</h1>
         <div className="flex shrink-0 gap-2">
@@ -133,7 +133,7 @@ function Cms() {
           </Button>
         ))}
       </div>
-      <div className="min-h-[500px] transition-opacity duration-150" aria-busy={switching} style={{ opacity: switching ? 0.6 : 1 }}><Suspense fallback={<div className="flex min-h-[400px] items-center justify-center py-20 text-center text-muted-foreground" role="status"><div className="flex flex-col items-center gap-3"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /><p className="text-sm">{t.common.loading}</p></div></div>}>
+      <div className="min-h-[60vh]" aria-busy={switching}><Suspense fallback={<p className="py-10 text-center text-muted-foreground" role="status">{t.common.loading}</p>}>
         {kind === "memberPayment" ? <MemberPaymentManager /> : kind === "partnership" ? <PartnershipManager /> : kind === "media" ? <MediaLibrary /> : kind === "members" ? <MemberManager /> : kind === "tracking" ? <Suspense fallback={<p className="py-10 text-center text-muted-foreground" role="status">{c.tracking.loading}</p>}><SharedTracking /></Suspense> : kind === "registrations" ? <Suspense fallback={<p className="py-10 text-center text-muted-foreground" role="status">{c.registrations.loading}</p>}><RegistrationManager /></Suspense> : <List key={kind} kind={kind === "recurring" ? "events" : kind} recurring={kind === "recurring"} />}
       </Suspense></div>
     </div>
