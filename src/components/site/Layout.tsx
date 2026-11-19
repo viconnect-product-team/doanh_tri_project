@@ -69,26 +69,37 @@ export function Header() {
           <Button asChild className="hidden h-11 shrink-0 whitespace-nowrap px-4 sm:inline-flex"><Link to="/lien-he">
             {t.common.connect} <ArrowRight className="h-4 w-4 shrink-0" />
           </Link></Button>
-          <Button variant="ghost" size="icon" aria-label={t.common.menu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)} className="h-11 w-11 shrink-0">
+          <Button variant="ghost" size="icon" aria-label={t.common.menu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)} className="h-11 w-11 shrink-0 xl:hidden">
             {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
       </div>
+      <nav className="hidden border-t border-border xl:block" aria-label={t.common.menu}>
+        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-center gap-x-6 px-8">
+          {t.nav.map((n) => (
+            <Link key={n.to} to={n.to}
+              className="relative whitespace-nowrap py-3 text-[13px] font-medium text-foreground transition-colors hover:text-primary"
+              activeProps={{ className: "relative whitespace-nowrap py-3 text-[13px] font-semibold text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary" }}>
+              {n.label}
+            </Link>
+          ))}
+          <Link to="/tro-ly" className="whitespace-nowrap py-3 text-[13px] font-semibold text-primary">{t.assistant.title}</Link>
+          <a href="https://uniworkos.com" target="_blank" rel="noopener noreferrer" className="whitespace-nowrap py-3 text-[13px] font-medium text-foreground transition-colors hover:text-primary">Uniwork</a>
+        </div>
+      </nav>
       {open && (
-        <nav id="mobile-navigation" className="max-h-[calc(100dvh-80px)] overflow-y-auto border-t border-border bg-background px-6 md:px-8 pb-6">
-          <div className="mx-auto max-w-[1440px]">
-            {[...t.nav, { to: "/lien-he", label: t.common.connect }].map((n) => (
-              <Link key={n.to} to={n.to} onClick={() => setOpen(false)}
-                className="block border-b border-border py-4 text-base text-foreground transition-colors hover:text-primary"
-                activeProps={{ className: "block border-b border-border py-4 text-base font-medium text-primary" }}>
-                {n.label}
-              </Link>
-            ))}
-            <a href="https://uniworkos.com" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="block border-b border-border py-4 text-base text-foreground transition-colors hover:text-primary">Uniwork</a>
-            <Link to="/tro-ly" onClick={() => setOpen(false)} className="block py-4 font-semibold text-primary">{t.assistant.title}</Link>
-            <Link to={signedIn ? "/hoi-vien" : "/auth"} search={signedIn ? {} : { member: true }} onClick={() => setOpen(false)} className="block py-4 font-semibold text-primary">{signedIn ? t.memberPage.title : t.assistant.membershipLogin}</Link>
-            <Link to={signedIn ? "/cms" : "/auth"} onClick={() => setOpen(false)} className="flex items-center gap-2 py-4 font-semibold text-primary"><ShieldCheck className="h-4 w-4" />{signedIn ? t.common.adminArea : t.common.adminLogin}</Link>
-          </div>
+        <nav id="mobile-navigation" className="max-h-[calc(100dvh-80px)] overflow-y-auto border-t border-border bg-background px-6 pb-6 xl:hidden">
+          {[...t.nav, { to: "/lien-he", label: t.common.connect }].map((n) => (
+            <Link key={n.to} to={n.to} onClick={() => setOpen(false)}
+              className="block border-b border-border py-4 text-base text-foreground"
+              activeProps={{ className: "block border-b border-border py-4 text-base font-medium text-primary" }}>
+              {n.label}
+            </Link>
+          ))}
+          <a href="https://uniworkos.com" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="block border-b border-border py-4 text-base text-foreground">Uniwork</a>
+          <Link to="/tro-ly" onClick={() => setOpen(false)} className="block py-4 font-semibold text-primary">{t.assistant.title}</Link>
+          <Link to={signedIn ? "/hoi-vien" : "/auth"} search={signedIn ? {} : { member: true }} onClick={() => setOpen(false)} className="block py-4 font-semibold text-primary">{signedIn ? t.memberPage.title : t.assistant.membershipLogin}</Link>
+          <Link to={signedIn ? "/cms" : "/auth"} onClick={() => setOpen(false)} className="flex items-center gap-2 py-4 font-semibold text-primary"><ShieldCheck className="h-4 w-4" />{signedIn ? t.common.adminArea : t.common.adminLogin}</Link>
         </nav>
       )}
     </header>
